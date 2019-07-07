@@ -1,0 +1,22 @@
+2-layer LSTM
+
+decoder.rnn.layers.1.weight_hh
+decoder.rnn.layers.0.weight_hh
+decoder.rnn.layers.0.bias_ih
+decoder.rnn.layers.1.weight_ih
+decoder.rnn.layers.1.bias_ih
+decoder.rnn.layers.1.bias_hh
+decoder.rnn.layers.0.bias_hh
+decoder.rnn.layers.0.weight_ih
+decoder.attn.linear_out.weight
+decoder.attn.linear_in.weight
+
+
+encoder.rnn.weight_hh_l1
+encoder.rnn.bias_hh_l1
+encoder.rnn.weight_ih_l1
+encoder.rnn.bias_ih_l1
+encoder.rnn.weight_hh_l0
+encoder.rnn.bias_hh_l0
+encoder.rnn.weight_ih_l0
+encoder.rnn.bias_ih_l0

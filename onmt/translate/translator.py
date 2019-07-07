@@ -408,6 +408,58 @@ class Translator(object):
                       codecs.open(self.dump_beam, 'w', 'utf-8'))
         return all_scores, all_predictions
 
+    def encode(
+            self,
+            src,
+            tgt=None,
+            src_dir=None,
+            batch_size=None,
+            attn_debug=False,
+            phrase_table=""):
+        """Translate content of ``src`` and get gold scores from ``tgt``.
+
+        Args:
+            src: See :func:`self.src_reader.read()`.
+            tgt: See :func:`self.tgt_reader.read()`.
+            src_dir: See :func:`self.src_reader.read()` (only relevant
+                for certain types of data).
+            batch_size (int): size of examples per mini-batch
+            attn_debug (bool): enables the attention logging
+
+        Returns:
+            (`list`, `list`)
+
+            * all_scores is a list of `batch_size` lists of `n_best` scores
+            * all_predictions is a list of `batch_size` lists
+                of `n_best` predictions
+        """
+
+        if batch_size is None:
+            raise ValueError("batch_size must be set")
+
+        data = inputters.Dataset(
+            self.fields,
+            readers=([self.src_reader, self.tgt_reader]
+                     if tgt else [self.src_reader]),
+            data=[("src", src), ("tgt", tgt)] if tgt else [("src", src)],
+            dirs=[src_dir, None] if tgt else [src_dir],
+            sort_key=inputters.str2sortkey[self.data_type],
+            filter_pred=self._filter_pred
+        )
+
+        data_iter = inputters.OrderedIterator(
+            dataset=data,
+            device=self._dev,
+            batch_size=batch_size,
+            train=False,
+            sort=False,
+            sort_within_batch=True,
+            shuffle=False
+        )
+
+        for batch in data_iter:
+            self._run_encoder(batch)
+
     def _translate_random_sampling(
             self,
             batch,
